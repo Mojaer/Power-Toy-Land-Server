@@ -26,14 +26,21 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
         const toyCollection = client.db('PowerToyLand').collection('Toys')
+        const userToyCollection = client.db('PowerToyLand').collection('userToys')
 
 
         // all methods  to GET POST PUT Delete
 
-        app.get('/category', async (req, res) => {
+        app.get('/toy', async (req, res) => {
             const result = await toyCollection.find().toArray();
             res.send(result);
         })
+
+        app.post('/addtoy', async (req, res) => {
+            const userToy = req.body
+            const result = await userToyCollection.insertOne(userToy)
+            res.send(result)
+        });
 
 
 
