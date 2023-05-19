@@ -36,6 +36,8 @@ async function run() {
             res.send(result);
         })
 
+        // post method to add a new toy by user
+
         app.post('/addtoy', async (req, res) => {
             const userToy = req.body
             const result = await userToyCollection.insertOne(userToy)
