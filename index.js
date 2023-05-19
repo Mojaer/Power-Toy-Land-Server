@@ -44,6 +44,12 @@ async function run() {
             res.send(result)
         });
 
+        // get method to find all users toy 
+        app.get('/allusertoys', async (req, res) => {
+            const result = await userToyCollection.find().toArray();
+            res.send(result);
+        })
+
 
 
 
