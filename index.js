@@ -78,8 +78,6 @@ async function run() {
             if (result) {
                 res.send(result)
             }
-
-
         });
 
 
@@ -89,6 +87,7 @@ async function run() {
             const result = await userToyCollection.insertOne(userToy)
             res.send(result)
         });
+
 
         // pathch to update the toy 
         app.patch('/toyupdate/:id', async (req, res) => {
