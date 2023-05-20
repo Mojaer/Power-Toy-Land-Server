@@ -62,6 +62,27 @@ async function run() {
         })
 
 
+
+        // get method to find all users toy 
+        app.get('/allusertoys', async (req, res) => {
+            const result = await userToyCollection.find().toArray();
+            res.send(result);
+        })
+
+        //get method to find the specific user's toy collection
+        app.get('/mytoys', async (req, res) => {
+            const { email } = req.query;
+            const quarry = { sellerEmail: email }
+            const result = await userToyCollection.find(quarry).toArray()
+
+            if (result) {
+                res.send(result)
+            }
+
+
+        });
+
+
         // post method to add a new toy by user
         app.post('/addtoy', async (req, res) => {
             const userToy = req.body
@@ -69,10 +90,28 @@ async function run() {
             res.send(result)
         });
 
-        // get method to find all users toy 
-        app.get('/allusertoys', async (req, res) => {
-            const result = await userToyCollection.find().toArray();
+        // pathch to update the toy 
+        app.patch('/toyupdate/:id', async (req, res) => {
+            const toyUpdate = req.body
+            const id = req.params.id
+            const filter = { _id: new ObjectId(id) };
+            const update = {
+                $set: {
+                    price: toyUpdate.price,
+                    quantity: toyUpdate.quantity,
+                    description: toyUpdate.description
+                }
+            }
+            const result = await userToyCollection.updateOne(filter, update)
             res.send(result);
+        })
+
+        app.delete('/mytoys/:id', async (req, res) => {
+            const id = req.params.id
+            // console.log(id)
+            const query = { _id: new ObjectId(id) }
+            const result = await userToyCollection.deleteOne(query)
+            res.send(result)
         })
 
 
