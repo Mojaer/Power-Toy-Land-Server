@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000
 
 app.use(cors());
@@ -36,8 +36,33 @@ async function run() {
             res.send(result);
         })
 
-        // post method to add a new toy by user
+        // get data for view details 
+        app.get('/viewdetails/:id', async (req, res) => {
+            const id = req.params.id;
+            // console.log(id);
 
+            const quarry = { _id: new ObjectId(id) }
+            // find the data from different data collections 
+
+            const result1 = await userToyCollection.findOne(quarry);
+
+            if (result1) {
+                res.send(result1);
+            }
+
+            else {
+                const result2 = await toyCollection.findOne(quarry);
+                if (result2) {
+                    res.send(result2);
+                }
+                else {
+                    res.send({ error: true, message: 'data is not found' });
+                }
+            }
+        })
+
+
+        // post method to add a new toy by user
         app.post('/addtoy', async (req, res) => {
             const userToy = req.body
             const result = await userToyCollection.insertOne(userToy)
