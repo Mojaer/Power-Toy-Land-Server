@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
         const toyCollection = client.db('PowerToyLand').collection('Toys')
         const userToyCollection = client.db('PowerToyLand').collection('userToys')
 
@@ -81,12 +81,22 @@ async function run() {
         });
 
 
+        //sorting data by price
+        app.get('/sort/:num', async (req, res) => {
+            const num = req.params.num;
+            const result = await userToyCollection.find({}).sort({ price: num }).toArray();
+            res.send(result);
+        })
+
+
+
         // post method to add a new toy by user
         app.post('/addtoy', async (req, res) => {
             const userToy = req.body
             const result = await userToyCollection.insertOne(userToy)
             res.send(result)
         });
+
 
 
         // pathch to update the toy 
