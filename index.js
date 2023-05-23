@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const puppeteer = require('puppeteer');
 const port = process.env.PORT || 5000
 
 app.use(cors());
@@ -95,6 +96,37 @@ async function run() {
             const userToy = req.body
             const result = await userToyCollection.insertOne(userToy)
             res.send(result)
+        });
+
+
+        // conversion to pdf
+        app.get('/convert-to-pdf', async (req, res) => {
+            const { url } = req.query;
+            console.log(url)
+
+
+            try {
+                const browser = await puppeteer.launch(
+                    {
+                        headless: true,
+                        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+                        ignoreHTTPSErrors: true, // Ignore HTTPS errors
+                    }
+                );
+                const page = await browser.newPage();
+
+                await page.goto(url, { waitUntil: 'networkidle0' });
+                await page.setViewport({ width: 1200, height: 800, isLandscape: true });
+                const pdfBuffer = await page.pdf({ format: 'A4', landscape: true });
+
+                await browser.close();
+
+                res.setHeader('Content-Type', 'application/pdf');
+                res.send(pdfBuffer);
+            } catch (error) {
+                console.error('PDF conversion failed:', error);
+                res.status(500).send('PDF conversion failed');
+            }
         });
 
 
